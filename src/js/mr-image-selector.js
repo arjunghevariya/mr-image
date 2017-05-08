@@ -1,5 +1,5 @@
 
-app.directive('mrImageSelector', function(){
+app.directive('mrImageSelector',['$timeout', function($timeout){
 
     function offset(element) {
         var documentElem;
@@ -37,6 +37,12 @@ app.directive('mrImageSelector', function(){
             });
 
             var $document = angular.element(document);
+
+            $timeout(function () {
+                $timeout(function () {
+                update(selector.x1, selector.y1, selector.x2, selector.y2, {});
+                }, 0);
+            }, 0);
 
             //
             // Initialize
@@ -551,4 +557,4 @@ app.directive('mrImageSelector', function(){
             }
         }
     };
-});
+}]);
