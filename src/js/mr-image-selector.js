@@ -38,11 +38,27 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
 
             var $document = angular.element(document);
 
-            $timeout(function () {
-                $timeout(function () {
-                update(selector.x1, selector.y1, selector.x2, selector.y2, {});
-                }, 0);
-            }, 0);
+            /**
+             * option add height and width
+             *   To Default select crop image
+             *   Add Extra Options
+             *
+             *   => width  -> Store as Number
+             *   => height -> Store as Number
+             *
+             */
+
+            var timer = $timeout(function () {
+                $timeout.cancel(timer);
+                if (selector.width && selector.height) {
+                    updateRect({
+                        top: selector.x1,
+                        bottom: selector.x2,
+                        left: selector.y1,
+                        right: selector.y2
+                    }, selector.width, selector.height, undefined);
+                }
+            });
 
             //
             // Initialize
