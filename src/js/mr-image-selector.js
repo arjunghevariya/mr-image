@@ -1,14 +1,13 @@
-
-app.directive('mrImageSelector',['$timeout', function($timeout){
+app.directive('mrImageSelector', ['$timeout', function ($timeout) {
 
     function offset(element) {
         var documentElem;
-        var box = { top: 0, left: 0 };
+        var box = {top: 0, left: 0};
         var doc = element && element[0].ownerDocument;
 
         documentElem = doc.documentElement;
 
-        if ( typeof element[0].getBoundingClientRect !== undefined ) {
+        if (typeof element[0].getBoundingClientRect !== undefined) {
             box = element[0].getBoundingClientRect();
         }
 
@@ -25,7 +24,7 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
             src: '=?mrSrc',
             aspectRatio: '=?mrAspectRatio'
         },
-        link: function(scope, element) {
+        link: function (scope, element) {
 
             scope.selector = scope.selector || {};
 
@@ -48,16 +47,17 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
              *
              */
 
-            var timer = $timeout(function () {
-                $timeout.cancel(timer);
-                if (selector.width && selector.height) {
-                    updateRect({
-                        top: selector.x1,
-                        bottom: selector.x2,
-                        left: selector.y1,
-                        right: selector.y2
-                    }, selector.width, selector.height, undefined);
+            var timer = '';
+            scope.$watch(function () {
+                return element.width();
+            }, function () {
+                if (timer) {
+                    $timeout.cancel(timer);
                 }
+
+                timer = $timeout(function () {
+                    update(0, 0, element.width(), element.height());
+                }, 300);
             });
 
             //
@@ -65,25 +65,25 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
             //
 
             var $rect = angular.element('<div class="mr-box">' +
-            '<div class="mr-line top"></div>'    +
-            '<div class="mr-line bottom"></div>' +
-            '<div class="mr-line left"></div>'   +
-            '<div class="mr-line right"></div>'  +
-            '</div>');
+                '<div class="mr-line top"></div>' +
+                '<div class="mr-line bottom"></div>' +
+                '<div class="mr-line left"></div>' +
+                '<div class="mr-line right"></div>' +
+                '</div>');
 
             var $lines = angular.element('<div class="mr-drag-line n"></div>' +
-            '<div class="mr-drag-line s"></div>' +
-            '<div class="mr-drag-line w"></div>' +
-            '<div class="mr-drag-line e"></div>');
+                '<div class="mr-drag-line s"></div>' +
+                '<div class="mr-drag-line w"></div>' +
+                '<div class="mr-drag-line e"></div>');
 
             var $handles = angular.element('<div class="mr-drag-handle nw"></div>' +
-            '<div class="mr-drag-handle n"></div>'  +
-            '<div class="mr-drag-handle ne"></div>' +
-            '<div class="mr-drag-handle w"></div>'  +
-            '<div class="mr-drag-handle e"></div>'  +
-            '<div class="mr-drag-handle sw"></div>' +
-            '<div class="mr-drag-handle s"></div>'  +
-            '<div class="mr-drag-handle se"></div>');
+                '<div class="mr-drag-handle n"></div>' +
+                '<div class="mr-drag-handle ne"></div>' +
+                '<div class="mr-drag-handle w"></div>' +
+                '<div class="mr-drag-handle e"></div>' +
+                '<div class="mr-drag-handle sw"></div>' +
+                '<div class="mr-drag-handle s"></div>' +
+                '<div class="mr-drag-handle se"></div>');
 
             $rect.append($lines).append($handles);
 
@@ -95,10 +95,10 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
 
             var $shadow = angular.element('<div class="mr-shadow">');
 
-            var $shadowLeft         = angular.element('<div class="mr-shadow left">');
-            var $shadowCenterTop    = angular.element('<div class="mr-shadow center top">');
+            var $shadowLeft = angular.element('<div class="mr-shadow left">');
+            var $shadowCenterTop = angular.element('<div class="mr-shadow center top">');
             var $shadowCenterBottom = angular.element('<div class="mr-shadow center bottom">');
-            var $shadowRight        = angular.element('<div class="mr-shadow right">');
+            var $shadowRight = angular.element('<div class="mr-shadow right">');
 
             $shadow.append($shadowLeft).append($shadowCenterTop).append($shadowCenterBottom).append($shadowRight);
             element.append($shadow);
@@ -106,16 +106,16 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
             function updateShadow(position, width, height) {
                 $shadow.css('display', 'block');
 
-                $shadowLeft.css('right', width - position.left  + 'px');
+                $shadowLeft.css('right', width - position.left + 'px');
                 $shadowRight.css('left', width - position.right + 'px');
 
-                $shadowCenterTop.css('left',   position.left  + 'px');
-                $shadowCenterTop.css('right',  position.right + 'px');
+                $shadowCenterTop.css('left', position.left + 'px');
+                $shadowCenterTop.css('right', position.right + 'px');
                 $shadowCenterTop.css('bottom', height - position.top + 'px');
 
-                $shadowCenterBottom.css('left',  position.left  + 'px');
+                $shadowCenterBottom.css('left', position.left + 'px');
                 $shadowCenterBottom.css('right', position.right + 'px');
-                $shadowCenterBottom.css('top',   height - position.bottom + 'px');
+                $shadowCenterBottom.css('top', height - position.bottom + 'px');
             }
 
             //
@@ -178,7 +178,7 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
 
             function update(x1, y1, x2, y2, apply) {
                 var height = element.css('height').replace('px', '');
-                var width  = element.css('width').replace('px', '');
+                var width = element.css('width').replace('px', '');
 
                 // Cap values to bounds
                 x2 = x2 < 0 ? 0 : x2;
@@ -227,10 +227,10 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
                 startY = event.pageY;
 
                 rectPosition = {
-                    top:    parseInt($rect.css('top')),
+                    top: parseInt($rect.css('top')),
                     bottom: parseInt($rect.css('bottom')),
-                    left:   parseInt($rect.css('left')),
-                    right:  parseInt($rect.css('right'))
+                    left: parseInt($rect.css('left')),
+                    right: parseInt($rect.css('right'))
                 };
 
                 bindResize();
@@ -238,17 +238,17 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
 
             function onResizeMove(event) {
                 var height = element.css('height').replace('px', '');
-                var width  = element.css('width').replace('px', '');
+                var width = element.css('width').replace('px', '');
 
                 // The difference (delta) is the same to all coordinates, relatives and absolutes
                 var diffX = event.pageX - startX;
                 var diffY = event.pageY - startY;
 
                 var position = {
-                    top:    rectPosition.top,
+                    top: rectPosition.top,
                     bottom: rectPosition.bottom,
-                    left:   rectPosition.left,
-                    right:  rectPosition.right
+                    left: rectPosition.left,
+                    right: rectPosition.right
                 };
 
                 // nw n ne
@@ -282,10 +282,10 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
                     position.right = width - aux;
                 }
 
-                position.top    = position.top    < 0 ?  0 : position.top;
-                position.bottom = position.bottom < 0 ?  0 : position.bottom;
-                position.left   = position.left   < 0 ?  0 : position.left;
-                position.right  = position.right  < 0 ?  0 : position.right;
+                position.top = position.top < 0 ? 0 : position.top;
+                position.bottom = position.bottom < 0 ? 0 : position.bottom;
+                position.left = position.left < 0 ? 0 : position.left;
+                position.right = position.right < 0 ? 0 : position.right;
 
                 if (aspectRatio) {
                     if (type == 'n') {
@@ -357,10 +357,10 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
                 startY = event.pageY;
 
                 rectPosition = {
-                    top:    parseInt($rect.css('top')),
+                    top: parseInt($rect.css('top')),
                     bottom: parseInt($rect.css('bottom')),
-                    left:   parseInt($rect.css('left')),
-                    right:  parseInt($rect.css('right'))
+                    left: parseInt($rect.css('left')),
+                    right: parseInt($rect.css('right'))
                 };
 
                 bindMoving();
@@ -368,7 +368,7 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
 
             function onMovingMove(event) {
                 var height = element.css('height').replace('px', '');
-                var width  = element.css('width').replace('px', '');
+                var width = element.css('width').replace('px', '');
 
                 // The difference (delta) is the same to all coordinates, relatives and absolutes
                 var diffX = event.pageX - startX;
@@ -376,10 +376,10 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
 
                 // Position is relative to parent
                 var position = {
-                    top:    rectPosition.top    + diffY,
+                    top: rectPosition.top + diffY,
                     bottom: rectPosition.bottom - diffY,
-                    left:   rectPosition.left   + diffX,
-                    right:  rectPosition.right  - diffX
+                    left: rectPosition.left + diffX,
+                    right: rectPosition.right - diffX
                 };
 
                 if (position.top < 0) {
@@ -452,10 +452,10 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
                 $rect.css('display', 'block');
 
                 $rect.css({
-                    top:    position.top    + 'px',
+                    top: position.top + 'px',
                     bottom: position.bottom + 'px',
-                    left:   position.left   + 'px',
-                    right:  position.right  + 'px'
+                    left: position.left + 'px',
+                    right: position.right + 'px'
                 });
 
                 selectorWatch();
@@ -535,7 +535,7 @@ app.directive('mrImageSelector',['$timeout', function($timeout){
             function updateSelectorEnabled(enabled) {
                 selector.enabled = typeof enabled !== 'boolean' ? true : enabled;
 
-                if (selector.enabled && isPositionFinite()){
+                if (selector.enabled && isPositionFinite()) {
                     bind();
                     element.css('z-index', 300);
                     $rect.css('display', 'block');
